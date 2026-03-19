@@ -1,0 +1,17 @@
+{
+  "usuarios": [
+    { "id": 1, "nombre": "Fernando", "email": "gerente@mail.com", "password": "123456", "role": "gerente" },
+    { "id": 2, "nombre": "Ana", "email": "usuario@mail.com", "password": "123456", "role": "usuario" }
+  ],
+  "proyectos": [
+    { "id": 1, "nombre": "Sistema de Inventario", "descripcion": "Módulo de control de productos y stock." },
+    { "id": 2, "nombre": "App Recursos Humanos", "descripcion": "Gestión de empleados, vacaciones y nóminas." }
+  ],
+  "tareas": [
+    { "id": 1, "nombre": "Diseñar la base de datos", "usuario": "Carlos Pérez", "estado": "completada", "projectId": 1 },
+    { "id": 2, "nombre": "Implementar API REST", "usuario": "María López", "estado": "en progreso", "projectId": 1 },
+    { "id": 3, "nombre": "Integrar reportes", "usuario": "Fernando García", "estado": "pendiente", "projectId": 1 },
+    { "id": 4, "nombre": "Levantar requerimientos", "usuario": "Ana Martínez", "estado": "completada", "projectId": 2 },
+    { "id": 5, "nombre": "Diseño de wireframes", "usuario": "Luis Ramos", "estado": "pendiente", "projectId": 2 }
+  ]
+}
