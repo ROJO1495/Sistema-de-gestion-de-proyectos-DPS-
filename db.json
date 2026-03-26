@@ -1,7 +1,7 @@
 {
   "usuarios": [
-    { "id": 1, "nombre": "Fernando", "email": "gerente@mail.com", "password": "123456", "role": "gerente" },
-    { "id": 2, "nombre": "Ana", "email": "usuario@mail.com", "password": "123456", "role": "usuario" }
+    { "id": 1, "nombre": "Fernando", "email": "gerente@mail.com", "password": 123456, "role": "gerente" },
+    { "id": 2, "nombre": "Ana", "email": "usuario@mail.com", "password": 123456, "role": "usuario" }
   ],
   "proyectos": [
     { "id": 1, "nombre": "Sistema de Inventario", "descripcion": "Módulo de control de productos y stock." },
