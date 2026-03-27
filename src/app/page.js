@@ -21,6 +21,7 @@ export default function Home() {
   const [proyectos, setProyectos] = useState([]);
   const [tareas, setTareas]       = useState([]);
   const [todasTareas, setTodasTareas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [proyectoActivo, setProyectoActivo] = useState(null);
 
   // Formulario proyecto
@@ -38,6 +39,7 @@ export default function Home() {
     if (isAuthenticated) {
       cargarProyectos();
       cargarTodasTareas();
+      cargarUsuarios();
     }
   }, [isAuthenticated]);
 
@@ -100,6 +102,11 @@ export default function Home() {
     setTodasTareas(res.data);
   };
 
+  const cargarUsuarios = async () => {
+    const res = await api.get("/usuarios?role=usuario");
+    setUsuarios(res.data);
+  };
+
   const cargarTareas = async (proyecto) => {
     setProyectoActivo(proyecto);
     const res = await api.get(`/tareas?projectId=${proyecto.id}`);
@@ -138,6 +145,8 @@ export default function Home() {
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">Cargando contexto de aplicación...</div>;
 
   const esGerente = sesion?.role === "gerente";
+  const responsableActualNoDisponible =
+    usuTarea && !usuarios.some((usuario) => usuario.nombre === usuTarea);
   const completadas = todasTareas.filter(t => t.estado === "completada").length;
   const progresoPct = todasTareas.length > 0 ? Math.round((completadas / todasTareas.length) * 100) : 0;
 
@@ -284,8 +293,24 @@ export default function Home() {
                   <form onSubmit={guardarTarea} className="mb-4 space-y-2">
                     <input className="w-full border rounded p-2 text-sm" placeholder="Designación de la tarea"
                       value={nomTarea} onChange={e => setNomTarea(e.target.value)} required />
-                    <input className="w-full border rounded p-2 text-sm" placeholder="Recurso asignado..."
-                      value={usuTarea} onChange={e => setUsuTarea(e.target.value)} required />
+                    <select
+                      className="w-full border rounded p-2 text-sm bg-white"
+                      value={usuTarea}
+                      onChange={e => setUsuTarea(e.target.value)}
+                      required
+                    >
+                      <option value="" disabled>
+                        Seleccione un recurso asignado
+                      </option>
+                      {responsableActualNoDisponible && (
+                        <option value={usuTarea}>{usuTarea} (actual)</option>
+                      )}
+                      {usuarios.map((usuario) => (
+                        <option key={usuario.id} value={usuario.nombre}>
+                          {usuario.nombre}
+                        </option>
+                      ))}
+                    </select>
                     <button className="w-full bg-green-600 text-white py-1.5 rounded text-sm hover:bg-green-700">
                       {editTarea ? "Actualizar Parámetros" : "Asignar Recurso"}
                     </button>
