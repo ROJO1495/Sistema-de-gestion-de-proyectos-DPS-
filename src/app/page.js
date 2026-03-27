@@ -329,9 +329,15 @@ export default function Home() {
                     <p className="text-sm font-semibold">{t.nombre}</p>
                     <p className="text-xs text-gray-400">Responsable: {t.usuario}</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <select className="text-xs border rounded px-1 py-0.5"
+                      <select
+                        className="text-xs border rounded px-1 py-0.5 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                         value={t.estado || "pendiente"}
-                        onChange={e => cambiarEstado(t, e.target.value)}>
+                        disabled={
+                          !esGerente &&
+                          (t.usuario || "").trim().toLowerCase() !== (sesion?.nombre || "").trim().toLowerCase()
+                        }
+                        onChange={e => cambiarEstado(t, e.target.value)}
+                      >
                         <option value="pendiente">Fase Pendiente</option>
                         <option value="en progreso">En Ejecución</option>
                         <option value="completada">Fase Completada</option>
