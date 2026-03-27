@@ -21,6 +21,7 @@ export default function Home() {
   const [proyectos, setProyectos] = useState([]);
   const [tareas, setTareas]       = useState([]);
   const [todasTareas, setTodasTareas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [proyectoActivo, setProyectoActivo] = useState(null);
 
   // Formulario proyecto
@@ -38,6 +39,7 @@ export default function Home() {
     if (isAuthenticated) {
       cargarProyectos();
       cargarTodasTareas();
+      cargarUsuarios();
     }
   }, [isAuthenticated]);
 
@@ -100,6 +102,11 @@ export default function Home() {
     setTodasTareas(res.data);
   };
 
+  const cargarUsuarios = async () => {
+    const res = await api.get("/usuarios?role=usuario");
+    setUsuarios(res.data);
+  };
+
   const cargarTareas = async (proyecto) => {
     setProyectoActivo(proyecto);
     const res = await api.get(`/tareas?projectId=${proyecto.id}`);
@@ -127,9 +134,9 @@ export default function Home() {
   };
 
   const cambiarEstado = async (tarea, nuevoEstado) => {
-    await api.put(`/tareas/${tarea.id}`, { ...tarea, estado: nuevoEstado });
-    cargarTareas(proyectoActivo);
-    cargarTodasTareas();
+    await api.patch(`/tareas/${tarea.id}`, { estado: nuevoEstado });
+    await cargarTareas(proyectoActivo);
+    await cargarTodasTareas();
   };
 
   // ── Renderizado y Lógica de Presentación ──
@@ -138,6 +145,8 @@ export default function Home() {
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">Cargando contexto de aplicación...</div>;
 
   const esGerente = sesion?.role === "gerente";
+  const responsableActualNoDisponible =
+    usuTarea && !usuarios.some((usuario) => usuario.nombre === usuTarea);
   const completadas = todasTareas.filter(t => t.estado === "completada").length;
   const progresoPct = todasTareas.length > 0 ? Math.round((completadas / todasTareas.length) * 100) : 0;
 
@@ -284,8 +293,24 @@ export default function Home() {
                   <form onSubmit={guardarTarea} className="mb-4 space-y-2">
                     <input className="w-full border rounded p-2 text-sm" placeholder="Designación de la tarea"
                       value={nomTarea} onChange={e => setNomTarea(e.target.value)} required />
-                    <input className="w-full border rounded p-2 text-sm" placeholder="Recurso asignado..."
-                      value={usuTarea} onChange={e => setUsuTarea(e.target.value)} required />
+                    <select
+                      className="w-full border rounded p-2 text-sm bg-white"
+                      value={usuTarea}
+                      onChange={e => setUsuTarea(e.target.value)}
+                      required
+                    >
+                      <option value="" disabled>
+                        Seleccione un recurso asignado
+                      </option>
+                      {responsableActualNoDisponible && (
+                        <option value={usuTarea}>{usuTarea} (actual)</option>
+                      )}
+                      {usuarios.map((usuario) => (
+                        <option key={usuario.id} value={usuario.nombre}>
+                          {usuario.nombre}
+                        </option>
+                      ))}
+                    </select>
                     <button className="w-full bg-green-600 text-white py-1.5 rounded text-sm hover:bg-green-700">
                       {editTarea ? "Actualizar Parámetros" : "Asignar Recurso"}
                     </button>
@@ -304,9 +329,15 @@ export default function Home() {
                     <p className="text-sm font-semibold">{t.nombre}</p>
                     <p className="text-xs text-gray-400">Responsable: {t.usuario}</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <select className="text-xs border rounded px-1 py-0.5"
+                      <select
+                        className="text-xs border rounded px-1 py-0.5 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                         value={t.estado || "pendiente"}
-                        onChange={e => cambiarEstado(t, e.target.value)}>
+                        disabled={
+                          !esGerente &&
+                          (t.usuario || "").trim().toLowerCase() !== (sesion?.nombre || "").trim().toLowerCase()
+                        }
+                        onChange={e => cambiarEstado(t, e.target.value)}
+                      >
                         <option value="pendiente">Fase Pendiente</option>
                         <option value="en progreso">En Ejecución</option>
                         <option value="completada">Fase Completada</option>
