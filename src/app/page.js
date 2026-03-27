@@ -134,9 +134,9 @@ export default function Home() {
   };
 
   const cambiarEstado = async (tarea, nuevoEstado) => {
-    await api.put(`/tareas/${tarea.id}`, { ...tarea, estado: nuevoEstado });
-    cargarTareas(proyectoActivo);
-    cargarTodasTareas();
+    await api.patch(`/tareas/${tarea.id}`, { estado: nuevoEstado });
+    await cargarTareas(proyectoActivo);
+    await cargarTodasTareas();
   };
 
   // ── Renderizado y Lógica de Presentación ──
