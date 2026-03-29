@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/axios";
+import "./globals.css";
 
 export default function Home() {
 
@@ -267,7 +268,7 @@ export default function Home() {
             {proyectos.map(p => (
               <div key={p.id} onClick={() => cargarTareas(p)}
                 className={`p-3 mb-2 border rounded-lg cursor-pointer transition-colors ${proyectoActivo?.id === p.id ? "border-blue-500 bg-blue-50" : "hover:bg-gray-50"}`}>
-                <p className="text-sm font-semibold">{p.nombre}</p>
+                <p className="text-sm font-semibold nProyecto">{p.nombre}</p>
                 <p className="text-xs text-gray-400">{p.descripcion}</p>
                 {esGerente && (
                   <div className="flex gap-3 mt-1" onClick={e => e.stopPropagation()}>
@@ -326,7 +327,7 @@ export default function Home() {
                 {tareas.length === 0 && <p className="text-sm text-gray-400 italic">No se han registrado tareas subyacentes.</p>}
                 {tareas.map(t => (
                   <div key={t.id} className="p-3 mb-2 border rounded-lg bg-gray-50">
-                    <p className="text-sm font-semibold">{t.nombre}</p>
+                    <p className="text-sm font-semibold nProyecto">{t.nombre}</p>
                     <p className="text-xs text-gray-400">Responsable: {t.usuario}</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <select
