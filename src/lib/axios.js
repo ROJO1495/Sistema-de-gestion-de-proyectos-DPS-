@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Configuracion base del cliente HTTP
 const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "https://gestordeproyecto-database.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },
